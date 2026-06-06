@@ -1,0 +1,18 @@
+{
+  "name": "pouta-forms",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-05-24",
+  "kv_namespaces": [
+    {
+      "binding": "FORM_SCHEMAS",
+      "id": "f82770723c594c12aa7c3aa3221e4992"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pouta_form_db",
+      "database_id": "35d7866d-5296-4f36-a676-d867c69c4d8d"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "pouta-forms",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Dynamic Form Engine running on Cloudflare Edge",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typegen": "wrangler typegen",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.16.13",
+    "@cloudflare/workers-types": "^4.20250518.0",
+    "@vitest/coverage-istanbul": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.8",
+    "typescript": "^5.4.5",
+    "vitest": "^4.1.8",
+    "wrangler": "^4.98.0"
+  }
+}
