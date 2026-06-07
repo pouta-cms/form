@@ -35,6 +35,7 @@ export interface FormPage {
   id: string;
   title?: string;
   fields: FormField[];
+  checkpoint?: boolean; // If true, a partial save is triggered when the user advances past this page
 }
 
 export interface FormField {

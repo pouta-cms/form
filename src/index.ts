@@ -1,6 +1,6 @@
 import { Env } from './types';
-import { adminHtml } from './admin';
-import { renderPlayerHtml } from './player';
+import { adminHtml, adminCss, adminJs, adminModuleJs } from './admin';
+import { renderPlayerHtml, playerCss, playerJs } from './player';
 import { LOGO_SVG, FAVICON_ICO_B64 } from './assets';
 
 // ==========================================
@@ -267,6 +267,56 @@ export default {
 
     if (path === '/logo.png' && method === 'GET') {
       return Response.redirect(url.origin + '/logo.svg', 302);
+    }
+
+    if (path === '/player.css' && method === 'GET') {
+      return new Response(playerCss, {
+        headers: {
+          'Content-Type': 'text/css',
+          'Cache-Control': 'public, max-age=86400',
+          ...corsHeaders
+        }
+      });
+    }
+
+    if (path === '/player.js' && method === 'GET') {
+      return new Response(playerJs, {
+        headers: {
+          'Content-Type': 'application/javascript',
+          'Cache-Control': 'public, max-age=86400',
+          ...corsHeaders
+        }
+      });
+    }
+
+    if (path === '/admin.css' && method === 'GET') {
+      return new Response(adminCss, {
+        headers: {
+          'Content-Type': 'text/css',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          ...corsHeaders
+        }
+      });
+    }
+
+    if (path === '/admin.js' && method === 'GET') {
+      return new Response(adminJs, {
+        headers: {
+          'Content-Type': 'application/javascript',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          ...corsHeaders
+        }
+      });
+    }
+
+    if (path === '/admin-module.js' && method === 'GET') {
+      return new Response(adminModuleJs, {
+        headers: {
+          'Content-Type': 'application/javascript',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          ...corsHeaders
+        }
+      });
     }
 
     // Route matching regex patterns
