@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { renderPlayerHtml, playerCss, playerJs } from "../player";
-import { adminHtml, adminCss, adminJs, adminModuleJs } from "../admin";
+import { adminHtml, adminJs } from "../admin";
 import { FormSchema } from "../types";
 
 describe("Admin template", () => {
