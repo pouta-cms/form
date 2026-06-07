@@ -11,7 +11,7 @@ export function renderPlayerHtml(
   const schemaJsonStr = JSON.stringify(schemaObj);
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="` + lang + `">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -255,7 +255,7 @@ export function renderPlayerHtml(
 
     input:focus, textarea:focus {
       border-color: var(--accent-color);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.05);
     }
 
     .contact-grid {
@@ -343,17 +343,17 @@ export function renderPlayerHtml(
     }
 
     .radio-label input[type="radio"]:focus ~ .radio-custom {
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
     }
 
     .radio-label:has(input[type="radio"]:focus-visible) {
       border-color: var(--accent-color);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35);
     }
 
     .radio-label:has(input[type="radio"]:checked) {
       border-color: var(--accent-color);
-      background: rgba(99, 102, 241, 0.05);
+      background: rgba(245, 158, 11, 0.05);
     }
 
     .radio-text {
@@ -385,22 +385,22 @@ export function renderPlayerHtml(
     }
 
     .option-card:hover {
-      background: rgba(99, 102, 241, 0.08);
-      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.4);
       transform: translateX(4px);
     }
 
     .option-card:focus-visible {
       outline: none;
       border-color: var(--accent-color);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35);
       transform: translateX(4px);
     }
 
     .option-card.selected {
-      background: rgba(99, 102, 241, 0.15);
+      background: rgba(245, 158, 11, 0.15);
       border-color: var(--accent-color);
-      box-shadow: 0 0 16px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
     }
 
     .option-badge {
@@ -433,14 +433,14 @@ export function renderPlayerHtml(
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
       transition: var(--transition-normal);
       width: fit-content;
     }
 
     .btn-action:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
     }
 
     .keyboard-hint {
@@ -724,6 +724,7 @@ export function renderPlayerHtml(
 
     const urlParams = new URLSearchParams(window.location.search);
     const activeLang = (urlParams.get('lang') || serverLang).toLowerCase() === 'fi' ? 'fi' : 'en';
+    document.documentElement.lang = activeLang;
 
     const translations = {
       en: {
