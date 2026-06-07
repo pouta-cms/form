@@ -144,6 +144,11 @@ describe("Player template rendering", () => {
     expect(html).toContain("<!DOCTYPE html>");
   });
 
+  it("should fall back to english for unsupported language", () => {
+    const html = renderPlayerHtml(baseSchema, "test-form", false, undefined, "invalid-lang");
+    expect(html).toContain('lang="en"');
+  });
+
   it("should fall back to default title if schema title is missing", () => {
     const schemaCopy = { ...baseSchema, title: "" };
     const html = renderPlayerHtml(schemaCopy, "test-form");

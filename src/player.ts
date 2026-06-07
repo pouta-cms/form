@@ -15,8 +15,12 @@ export function renderPlayerHtml(
 
   // Escape the schema for safe inline injection into a <script> tag
   const schemaJson = JSON.stringify(schemaObj).replace(/<\/script>/gi, '<\\/script>');
-  const title = escapeHtml(schemaObj.title || 'Form');
+  const title = escapeHtml(schemaObj.title) || 'Form';
   const siteKey = turnstilePublicKey || '0x4AAAAAAA-wS6ZfQh649eTz';
+
+  // Normalize and validate language
+  const allowedLanguages = ['en', 'fi'];
+  const normalizedLang = allowedLanguages.includes(lang) ? lang : 'en';
 
   // Turnstile script tag — only added when the form uses it
   const turnstileScriptTag = schemaObj.turnstileEnabled
@@ -24,7 +28,7 @@ export function renderPlayerHtml(
     : '';
 
   return `<!DOCTYPE html>
-<html lang="${lang}">
+<html lang="${normalizedLang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +79,7 @@ export function renderPlayerHtml(
       schema: ${schemaJson},
       formId: ${JSON.stringify(formId)},
       isPreview: ${isPreview},
-      serverLang: ${JSON.stringify(lang)},
+      serverLang: ${JSON.stringify(normalizedLang)},
       turnstileSiteKey: ${JSON.stringify(siteKey)}
     };
   </script>
@@ -85,7 +89,7 @@ export function renderPlayerHtml(
 }
 
 // Server-side escapeHtml — used during TypeScript HTML generation (not shipped to the browser)
-function escapeHtml(str: string): string {
+function escapeHtml(str?: string | null): string {
   if (!str) return '';
   return str
     .replace(/&/g, '&amp;')

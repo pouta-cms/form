@@ -68,9 +68,11 @@
       state.forms.forEach(form => {
         const li = document.createElement('li');
         const activeClass = state.currentFormId === form.name ? 'active' : '';
+        const escapedFormName = escapeHtml(form.name);
+        const jsEscapedFormName = escapeHtml(form.name.replace(/'/g, "\\'").replace(/"/g, '\\"'));
         li.innerHTML = `
-          <button class="form-item-btn ${activeClass}" onclick="selectForm('${form.name}')">
-            <span>${form.name}</span>
+          <button class="form-item-btn ${activeClass}" onclick="selectForm('${jsEscapedFormName}')">
+            <span>${escapedFormName}</span>
           </button>
         `;
         container.appendChild(li);
@@ -509,16 +511,16 @@
             jumpsHtml += `
               <div class="jump-row">
                 <div style="font-size: 0.85rem; color: var(--text-secondary);">If Field</div>
-                <select onchange="updateJumpRule(${pageIdx}, ${ruleIdx}, 'field', this.value)">
+                 <select onchange="updateJumpRule(${pageIdx}, ${ruleIdx}, 'field', this.value)">
                   <option value="">-- select field --</option>
-                  ${page.fields.map(f => `<option value="${f.id}" ${rule.field === f.id ? 'selected' : ''}>${f.label} (${f.id})</option>`).join('')}
+                  ${page.fields.map(f => `<option value="${escapeHtml(f.id)}" ${rule.field === f.id ? 'selected' : ''}>${escapeHtml(f.label)} (${escapeHtml(f.id)})</option>`).join('')}
                 </select>
                 <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">equals</div>
                 <input type="text" value="${escapeHtml(rule.value)}" placeholder="Value" oninput="updateJumpRule(${pageIdx}, ${ruleIdx}, 'value', this.value)">
                 <div style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">jump to</div>
                 <select onchange="updateJumpRule(${pageIdx}, ${ruleIdx}, 'to', this.value)">
                   <option value="">-- select page --</option>
-                  ${otherPages.map(p => `<option value="${p.id}" ${rule.to === p.id ? 'selected' : ''}>${p.title} (${p.id})</option>`).join('')}
+                  ${otherPages.map(p => `<option value="${escapeHtml(p.id)}" ${rule.to === p.id ? 'selected' : ''}>${escapeHtml(p.title)} (${escapeHtml(p.id)})</option>`).join('')}
                 </select>
                 <button class="btn-icon" onclick="deleteJumpRule(${pageIdx}, ${ruleIdx})">
                   <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -570,10 +572,16 @@
       initAllBlockNoteEditors();
     }
 
-    function initAllBlockNoteEditors() {
+    function initAllBlockNoteEditors(retryCount = 0) {
       if (typeof window.initializeBlockNoteEditor !== 'function') {
-        // If the module script hasn't loaded/initialized yet, retry in 50ms
-        setTimeout(initAllBlockNoteEditors, 50);
+        const maxRetries = 10;
+        if (retryCount >= maxRetries) {
+          console.error('Failed to initialize BlockNote editors: window.initializeBlockNoteEditor is not defined');
+          return;
+        }
+        // Exponential backoff: 50ms, 100ms, 200ms, 400ms, etc.
+        const delay = 50 * Math.pow(2, retryCount);
+        setTimeout(() => initAllBlockNoteEditors(retryCount + 1), delay);
         return;
       }
 
@@ -628,11 +636,11 @@
         
         tr.innerHTML = `
           <td><strong>${escapeHtml(sub.id)}</strong></td>
-          <td><span class="badge ${badgeClass}">${sub.status}</span></td>
+          <td><span class="badge ${badgeClass}">${escapeHtml(sub.status)}</span></td>
           <td>
-            <pre class="json-answers">${JSON.stringify(sub.answers, null, 2)}</pre>
+            <pre class="json-answers">${escapeHtml(JSON.stringify(sub.answers, null, 2))}</pre>
           </td>
-          <td><span style="color: var(--text-secondary); font-size: 0.85rem;">${formattedDate}</span></td>
+          <td><span style="color: var(--text-secondary); font-size: 0.85rem;">${escapeHtml(formattedDate)}</span></td>
         `;
         tbody.appendChild(tr);
       });
@@ -689,6 +697,9 @@
           strVal = JSON.stringify(val);
         } else {
           strVal = String(val);
+        }
+        if (/^[=+\-@\t\r]/.test(strVal)) {
+          strVal = "'" + strVal;
         }
         const escaped = strVal.replace(/"/g, '""');
         return `"${escaped}"`;

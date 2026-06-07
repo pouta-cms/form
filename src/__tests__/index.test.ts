@@ -899,5 +899,79 @@ describe("Worker Router tests", () => {
       expect(res.headers.get("Location")).toBe("https://admin/login");
     });
   });
+
+  describe("Static Assets and Admin Logout Routes", () => {
+    it("should serve /player.css", async () => {
+      const req = new Request("http://localhost/player.css");
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("Content-Type")).toBe("text/css");
+      expect(res.headers.get("Cache-Control")).toBe("public, max-age=86400");
+    });
+
+    it("should serve /player.js", async () => {
+      const req = new Request("http://localhost/player.js");
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("Content-Type")).toBe("application/javascript");
+      expect(res.headers.get("Cache-Control")).toBe("public, max-age=86400");
+    });
+
+    it("should serve /admin.css", async () => {
+      const req = new Request("http://localhost/admin.css");
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("Content-Type")).toBe("text/css");
+      expect(res.headers.get("Cache-Control")).toBe("no-cache, no-store, must-revalidate");
+    });
+
+    it("should serve /admin.js", async () => {
+      const req = new Request("http://localhost/admin.js");
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("Content-Type")).toBe("application/javascript");
+      expect(res.headers.get("Cache-Control")).toBe("no-cache, no-store, must-revalidate");
+    });
+
+    it("should serve /admin-module.js", async () => {
+      const req = new Request("http://localhost/admin-module.js");
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("Content-Type")).toBe("application/javascript");
+      expect(res.headers.get("Cache-Control")).toBe("no-cache, no-store, must-revalidate");
+    });
+
+    it("should handle /admin/logout for localhost (http)", async () => {
+      const req = new Request("http://localhost/admin/logout", {
+        headers: { "Host": "localhost" }
+      });
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(302);
+      expect(res.headers.get("Location")).toBe("http://localhost/");
+      const cookie = res.headers.get("Set-Cookie");
+      expect(cookie).toContain("pouta_admin_session=");
+      expect(cookie).not.toContain("Secure;");
+    });
+
+    it("should handle /admin/logout for external host (https)", async () => {
+      const req = new Request("https://forms.pouta.io/admin/logout", {
+        headers: { "Host": "forms.pouta.io" }
+      });
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(302);
+      expect(res.headers.get("Location")).toBe("https://forms.pouta.io/");
+      const cookie = res.headers.get("Set-Cookie");
+      expect(cookie).toContain("pouta_admin_session=");
+      expect(cookie).toContain("Secure;");
+    });
+
+    it("should handle /admin/logout when Host header is missing", async () => {
+      const req = new Request("http://localhost/admin/logout");
+      req.headers.delete("host");
+      const res = await worker.fetch(req, mockEnv, mockCtx);
+      expect(res.status).toBe(302);
+      expect(res.headers.get("Location")).toBe("https:///");
+    });
+  });
 });
 
