@@ -156,6 +156,7 @@ export const adminHtml = `<!DOCTYPE html>
             Export to CSV
           </button>
         </div>
+        <div class="stats-grid" id="statsGridContainer"></div>
         <div class="submissions-table-container">
           <table>
             <thead>

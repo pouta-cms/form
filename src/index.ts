@@ -794,7 +794,43 @@ export default {
           answers: JSON.parse(r.answers)
         }));
 
-        return new Response(JSON.stringify({ formId, submissions }), {
+        // Fetch views count from Cloudflare Workers Analytics Engine SQL API
+        let viewsCount = 0;
+        let viewsMocked = false;
+
+        if (env.CLOUDFLARE_ACCOUNT_ID && env.CLOUDFLARE_API_TOKEN) {
+          try {
+            const cleanFormId = formId.replace(/'/g, "''");
+            const sqlQuery = `SELECT count() AS views FROM FORM_ANALYTICS WHERE index1 = '${cleanFormId}' AND blob1 = 'viewed' FORMAT JSON`;
+            const url = `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/analytics_engine/sql`;
+            
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+                'Content-Type': 'application/json'
+              },
+              body: sqlQuery
+            });
+
+            if (res.ok) {
+              const resJson: any = await res.json();
+              if (resJson && resJson.data && resJson.data.length > 0) {
+                viewsCount = Number(resJson.data[0].views) || 0;
+              }
+            } else {
+              console.error("Workers Analytics Engine SQL query failed:", await res.text());
+            }
+          } catch (err) {
+            console.error("Error querying Cloudflare Workers Analytics Engine:", err);
+          }
+        } else {
+          // Fallback / Mock views in development when credentials are not bound
+          viewsCount = submissions.length > 0 ? submissions.length * 2 + 5 : 5;
+          viewsMocked = true;
+        }
+
+        return new Response(JSON.stringify({ formId, submissions, viewsCount, viewsMocked }), {
           headers: { 'Content-Type': 'application/json' }
         });
       } catch (dbErr: any) {

@@ -336,6 +336,8 @@ describe("Worker Router tests", () => {
       const data = await resJson.json() as any;
       expect(data.submissions.length).toBe(1);
       expect(data.submissions[0].answers).toEqual({ participant: { firstName: "Matti", lastName: "Esimerkki" } });
+      expect(data.viewsCount).toBe(7); // Mocked default: submissions.length * 2 + 5
+      expect(data.viewsMocked).toBe(true);
     });
   });
 
