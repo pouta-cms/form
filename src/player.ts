@@ -1500,6 +1500,7 @@ export function renderPlayerHtml(
     });
 
     // Helper functions
+    // Client-side escapeHtml — runs in the browser at form render time
     function escapeHtml(str) {
       if (!str) return '';
       return str
@@ -1531,7 +1532,9 @@ export function renderPlayerHtml(
 </html>`;
 }
 
+// Server-side escapeHtml — used during TypeScript HTML generation (not shipped to the browser)
 function escapeHtml(str: string): string {
+  if (!str) return '';
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

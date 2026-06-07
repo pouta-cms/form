@@ -1,4 +1,4 @@
-import { Env, Submission, SubmissionStatus } from './types';
+import { Env } from './types';
 import { adminHtml } from './admin';
 import { renderPlayerHtml } from './player';
 import { LOGO_SVG, FAVICON_ICO_B64 } from './assets';
