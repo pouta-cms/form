@@ -11,6 +11,8 @@ export interface Env {
   ALLOWED_ADMIN_EMAILS: string; // Comma-separated list
   TURNSTILE_SECRET_KEY?: string; // Optional site verification secret
   TURNSTILE_PUBLIC_KEY?: string; // Optional Turnstile sitekey
+  CLOUDFLARE_ACCOUNT_ID?: string;
+  CLOUDFLARE_API_TOKEN?: string;
 }
 
 export type SubmissionStatus = 'partial' | 'completed';

@@ -14,5 +14,10 @@
       "database_name": "pouta_form_db",
       "database_id": "35d7866d-5296-4f36-a676-d867c69c4d8d"
     }
+  ],
+  "analytics_engine_datasets": [
+    {
+      "binding": "FORM_ANALYTICS"
+    }
   ]
 }

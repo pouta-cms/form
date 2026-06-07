@@ -114,13 +114,17 @@
             pages: normalizedPages
           };
           
-          // Fetch Submissions
+           // Fetch Submissions
           const subsRes = await fetch(`/admin/submissions/${encodeURIComponent(formId)}`);
           if (subsRes.ok) {
             const subsData = await subsRes.json();
             state.submissions = subsData.submissions || [];
+            state.viewsCount = subsData.viewsCount || 0;
+            state.viewsMocked = !!subsData.viewsMocked;
           } else {
             state.submissions = [];
+            state.viewsCount = 0;
+            state.viewsMocked = false;
           }
 
           // Update Workspace UI
@@ -640,7 +644,40 @@
 
     function renderSubmissions() {
       const tbody = document.getElementById('submissionsTableBody');
+      const statsContainer = document.getElementById('statsGridContainer');
       tbody.innerHTML = '';
+
+      const views = state.viewsCount || 0;
+      const starts = state.submissions.length;
+      const completed = state.submissions.filter(s => s.status === 'completed').length;
+      const partial = starts - completed;
+      const conversionRate = views > 0 ? Math.round((completed / views) * 100) : 0;
+      const mockLabel = state.viewsMocked ? ' <span style="font-size: 0.7rem; color: var(--text-secondary); opacity: 0.7; font-weight: normal;">(mocked)</span>' : '';
+
+      if (statsContainer) {
+        statsContainer.innerHTML = `
+          <div class="stats-card">
+            <div class="stats-card-title">Total Views${mockLabel}</div>
+            <div class="stats-card-value">${views}</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card-title">Started Sessions</div>
+            <div class="stats-card-value">${starts}</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card-title">Completed</div>
+            <div class="stats-card-value completed">${completed}</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card-title">Partial / In-Progress</div>
+            <div class="stats-card-value partial">${partial}</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card-title">Conversion Rate</div>
+            <div class="stats-card-value rate">${conversionRate}%</div>
+          </div>
+        `;
+      }
 
       if (state.submissions.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No submissions registered for this form yet.</td></tr>';
