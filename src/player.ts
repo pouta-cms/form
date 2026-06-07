@@ -346,6 +346,11 @@ export function renderPlayerHtml(
       box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
     }
 
+    .radio-label:has(input[type="radio"]:focus-visible) {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+    }
+
     .radio-label:has(input[type="radio"]:checked) {
       border-color: var(--accent-color);
       background: rgba(99, 102, 241, 0.05);
@@ -677,31 +682,31 @@ export function renderPlayerHtml(
 <body>
 
   <!-- Progress bar -->
-  <div class="progress-bar-container">
+  <div class="progress-bar-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Form progress">
     <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
-  <div class="form-container">
+  <main class="form-container" aria-label="Form">
     <div id="screensWrapper">
       <!-- Dynamic Form Screens will be rendered here -->
     </div>
-  </div>
+  </main>
 
   <!-- Bottom Navigation -->
-  <div class="footer-controls">
+  <footer class="footer-controls" aria-label="Form navigation">
     <div class="nav-buttons">
-      <button class="btn-nav" id="btnPrev" onclick="goBack()" title="Previous Question (Up Arrow)">
+      <button class="btn-nav" id="btnPrev" onclick="goBack()" title="Previous Question (Up Arrow)" aria-label="Previous question">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <button class="btn-nav" id="btnNext" onclick="submitCurrentField()" title="Next Question (Down Arrow)">
+      <button class="btn-nav" id="btnNext" onclick="submitCurrentField()" title="Next Question (Down Arrow)" aria-label="Next question">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <span style="font-size: 0.8rem; color: var(--text-secondary);" id="footerCount">Page 1 of 1</span>
-  </div>
+    <span style="font-size: 0.8rem; color: var(--text-secondary);" id="footerCount" aria-live="polite">Page 1 of 1</span>
+  </footer>
 
   <!-- Toast Notifier -->
-  <div id="toast"></div>
+  <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Turnstile verification script (only added if enabled) -->
   ` + (schemaObj.turnstileEnabled ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : '') + `
@@ -823,7 +828,7 @@ export function renderPlayerHtml(
         wrapper.innerHTML = \`
           <div class="screen active welcome-screen">
             <div class="welcome-logo-container">
-              <img src="\${schema.logoUrl || '/logo.svg'}" alt="Logo" class="welcome-logo">
+              <img src="\${schema.logoUrl || '/logo.svg'}" alt="\${escapeHtml(schema.title)}" class="welcome-logo">
             </div>
             <h2 class="welcome-title">\${t('emptyFormTitle')}</h2>
             <p class="welcome-text">\${t('emptyFormDesc')}</p>
@@ -866,7 +871,7 @@ export function renderPlayerHtml(
 
           screenDiv.innerHTML = \`
             <div class="welcome-logo-container">
-              <img src="\${schema.logoUrl || '/logo.svg'}" alt="Logo" class="welcome-logo">
+              <img src="\${schema.logoUrl || '/logo.svg'}" alt="\${escapeHtml(schema.title)}" class="welcome-logo">
             </div>
             <div class="welcome-content-wrapper">
               \${contentHtml}
@@ -974,7 +979,7 @@ export function renderPlayerHtml(
             </div>
           \`;
         });
-        inner = \`<div class="options-grid" id="input-\${field.id}" role="radiogroup">\${cards}</div>\`;
+        inner = \`<div class="options-grid" id="input-\${field.id}">\${cards}</div>\`;
       } else if (field.type === 'multiselect') {
         const options = field.options || [];
         let cards = '';
@@ -989,7 +994,7 @@ export function renderPlayerHtml(
             </div>
           \`;
         });
-        inner = \`<div class="options-grid" id="input-\${field.id}" role="group">\${cards}</div>\`;
+        inner = \`<div class="options-grid" id="input-\${field.id}">\${cards}</div>\`;
       } else if (field.type === 'radio') {
         const options = field.options || [];
         let radioItems = '';
@@ -997,7 +1002,7 @@ export function renderPlayerHtml(
           const optId = \`radio-\${field.id}-\${oIdx}\`;
           radioItems += \`
             <label class="radio-label" for="\${optId}">
-              <input type="radio" name="\${field.id}" id="\${optId}" value="\${escapeHtml(opt)}" onclick="selectRadioOption('\${field.id}', this.value)" \${answers[field.id] === opt ? 'checked' : ''}>
+              <input type="radio" name="\${field.id}" id="\${optId}" value="\${escapeHtml(opt)}" onchange="selectRadioOption('\${field.id}', this.value)" \${answers[field.id] === opt ? 'checked' : ''}>
               <span class="radio-custom"></span>
               <span class="radio-text">\${escapeHtml(opt)}</span>
             </label>
@@ -1086,8 +1091,26 @@ export function renderPlayerHtml(
       }
 
       const hasSingleInput = ['text', 'email', 'tel', 'number', 'textarea'].includes(field.type);
-      const labelHtml = hasSingleInput 
-        ? \`<label for="input-\${field.id}">\${labelEscaped}</label>\` 
+      const isGroupField = ['select', 'multiselect', 'radio'].includes(field.type);
+
+      if (isGroupField) {
+        return \`
+          <div class="field-item" style="margin-bottom: 2rem;">
+            <fieldset style="border: none; padding: 0; margin: 0;">
+              <legend class="question-title">
+                <span class="question-index">\${questionNum} →</span>
+                \${labelEscaped}
+                \${isRequired ? '<span class="question-required">*</span>' : ''}
+              </legend>
+              \${descHtml}
+              \${inner}
+            </fieldset>
+          </div>
+        \`;
+      }
+
+      const labelHtml = hasSingleInput
+        ? \`<label for="input-\${field.id}">\${labelEscaped}</label>\`
         : \`<span>\${labelEscaped}</span>\`;
 
       return \`
@@ -1343,6 +1366,7 @@ export function renderPlayerHtml(
         pct = Math.round((currentPageIdx / schema.pages.length) * 100);
       }
       progressBar.style.width = pct + '%';
+      progressBar.closest('[role="progressbar"]')?.setAttribute('aria-valuenow', pct);
     }
 
     // Background Saves
@@ -1426,18 +1450,24 @@ export function renderPlayerHtml(
       \`;
       document.querySelector('.footer-controls').style.display = 'none';
       document.getElementById('progressBar').style.width = '100%';
+      document.querySelector('[role="progressbar"]')?.setAttribute('aria-valuenow', 100);
     }
 
     // Keyboard & Helpers
     window.addEventListener('keydown', (e) => {
       const activeEl = document.activeElement;
       const onCard = activeEl && activeEl.classList.contains('option-card');
+      const isInput = activeEl && (
+        activeEl.tagName === 'INPUT' || 
+        activeEl.tagName === 'TEXTAREA' || 
+        activeEl.tagName === 'SELECT'
+      );
 
-      // Arrow Up/Down navigation — skip when a card is focused
-      if (e.key === 'ArrowUp' && !onCard) {
+      // Arrow Up/Down navigation — skip when a card or native input is focused
+      if (e.key === 'ArrowUp' && !onCard && !isInput) {
         e.preventDefault();
         goBack();
-      } else if (e.key === 'ArrowDown' && !onCard) {
+      } else if (e.key === 'ArrowDown' && !onCard && !isInput) {
         e.preventDefault();
         submitCurrentField();
       }
