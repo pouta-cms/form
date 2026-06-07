@@ -1,13 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { renderPlayerHtml } from "../player";
-import { adminHtml } from "../admin";
+import { renderPlayerHtml, playerCss, playerJs } from "../player";
+import { adminHtml, adminJs } from "../admin";
 import { FormSchema } from "../types";
 
 describe("Admin template", () => {
-  it("should export adminHtml string", () => {
+  it("should export adminHtml string and link to assets", () => {
     expect(adminHtml).toBeTypeOf("string");
     expect(adminHtml).toContain("<!DOCTYPE html>");
     expect(adminHtml).toContain("Pouta Forms - Admin Builder");
+    expect(adminHtml).toContain('href="/admin.css"');
+    expect(adminHtml).toContain('src="/admin.js"');
+    expect(adminHtml).toContain('src="/admin-module.js"');
   });
 });
 
@@ -90,26 +93,25 @@ describe("Player template rendering", () => {
     expect(html).toContain('"buttonSubtext":"Takes 2 mins"');
   });
 
-  it("should output the correct head favicons and CSS assets", () => {
+  it("should output the correct head favicons and CSS links", () => {
     const html = renderPlayerHtml(baseSchema, "test-form", false, "turnstile-key", "en");
     expect(html).toContain('href="/favicon.svg"');
     expect(html).toContain('href="/favicon.ico"');
-    expect(html).toContain('--accent-color: #F59E0B;'); // Custom Amber branding accent color
+    expect(html).toContain('href="/player.css"');
+    expect(playerCss).toContain('--accent-color: #F59E0B;'); // Custom Amber branding accent color
   });
 
   it("should include dynamic welcome logo container in client-side script", () => {
-    const html = renderPlayerHtml(baseSchema, "test-form", false, "turnstile-key", "en");
-    expect(html).toContain('class="welcome-logo-container"');
-    expect(html).toContain('schema.logoUrl || \'/logo.svg\'');
+    expect(playerJs).toContain('class="welcome-logo-container"');
+    expect(playerJs).toContain('schema.logoUrl || \'/logo.svg\'');
   });
 
   it("should render client-side contact field inputs builder in script", () => {
-    const html = renderPlayerHtml(baseSchema, "test-form", false, "turnstile-key", "en");
-    expect(html).toContain('id="input-${field.id}-firstName"');
-    expect(html).toContain('id="input-${field.id}-lastName"');
-    expect(html).toContain('id="input-${field.id}-email"');
-    expect(html).toContain('id="input-${field.id}-phone"');
-    expect(html).toContain('id="input-${field.id}-company"');
+    expect(playerJs).toContain('id="input-${field.id}-firstName"');
+    expect(playerJs).toContain('id="input-${field.id}-lastName"');
+    expect(playerJs).toContain('id="input-${field.id}-email"');
+    expect(playerJs).toContain('id="input-${field.id}-phone"');
+    expect(playerJs).toContain('id="input-${field.id}-company"');
   });
 
   it("should handle turnstile toggle in rendering", () => {
@@ -142,6 +144,11 @@ describe("Player template rendering", () => {
     expect(html).toContain("<!DOCTYPE html>");
   });
 
+  it("should fall back to english for unsupported language", () => {
+    const html = renderPlayerHtml(baseSchema, "test-form", false, undefined, "invalid-lang");
+    expect(html).toContain('lang="en"');
+  });
+
   it("should fall back to default title if schema title is missing", () => {
     const schemaCopy = { ...baseSchema, title: "" };
     const html = renderPlayerHtml(schemaCopy, "test-form");
@@ -149,36 +156,32 @@ describe("Player template rendering", () => {
   });
 
   it("should render field descriptions in the HTML template output", () => {
-    const html = renderPlayerHtml(baseSchema, "test-form", false, "turnstile-key", "en");
-    expect(html).toContain("Please enter your text here");
-    expect(html).toContain('class="question-description"');
-    expect(html).toContain('marked.parse(field.description)');
+    expect(playerJs).toContain('class="question-description"');
+    expect(playerJs).toContain('marked.parse(field.description)');
   });
 
   it("should render radio button fields in the HTML template output", () => {
     const html = renderPlayerHtml(baseSchema, "test-form", false, "turnstile-key", "en");
-    expect(html).toContain('type="radio"');
-    expect(html).toContain('name="${field.id}"');
-    expect(html).toContain('class="radio-group"');
+    expect(playerJs).toContain('type="radio"');
+    expect(playerJs).toContain('name="${field.id}"');
+    expect(playerJs).toContain('class="radio-group"');
     expect(html).toContain('"Yes"');
     expect(html).toContain('"No"');
     expect(html).toContain('"Maybe"');
   });
 
   it("should correctly associate form labels with form controls in player template script", () => {
-    const html = renderPlayerHtml(baseSchema, "test-form", false, "turnstile-key", "en");
-    expect(html).toContain('labelHtml = hasSingleInput');
-    expect(html).toContain('for="input-${field.id}"');
+    expect(playerJs).toContain('labelHtml = hasSingleInput');
+    expect(playerJs).toContain('for="input-${field.id}"');
   });
 
   it("should correctly associate form labels with form controls in admin builder JS template source", () => {
-    expect(adminHtml).toContain('for="field-welcome-id-${pageIdx}-${fieldIdx}"');
-    expect(adminHtml).toContain('for="field-label-${pageIdx}-${fieldIdx}"');
-    expect(adminHtml).toContain('for="field-id-${pageIdx}-${fieldIdx}"');
-    expect(adminHtml).toContain('for="field-type-${pageIdx}-${fieldIdx}"');
-    expect(adminHtml).toContain('for="field-options-${pageIdx}-${fieldIdx}"');
-    expect(adminHtml).toContain('for="field-btn-label-${pageIdx}-${fieldIdx}"');
-    expect(adminHtml).toContain('for="field-btn-sub-${pageIdx}-${fieldIdx}"');
+    expect(adminJs).toContain('for="field-welcome-id-${pageIdx}-${fieldIdx}"');
+    expect(adminJs).toContain('for="field-label-${pageIdx}-${fieldIdx}"');
+    expect(adminJs).toContain('for="field-id-${pageIdx}-${fieldIdx}"');
+    expect(adminJs).toContain('for="field-type-${pageIdx}-${fieldIdx}"');
+    expect(adminJs).toContain('for="field-options-${pageIdx}-${fieldIdx}"');
+    expect(adminJs).toContain('for="field-btn-label-${pageIdx}-${fieldIdx}"');
+    expect(adminJs).toContain('for="field-btn-sub-${pageIdx}-${fieldIdx}"');
   });
 });
-

@@ -1,0 +1,63 @@
+// ===== MODULE SCRIPT =====
+import React, { useEffect, useRef } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { useCreateBlockNote } from '@blocknote/react';
+    import { BlockNoteView } from '@blocknote/mantine';
+
+    function BlockNoteWrapper({ initialMarkdown, onUpdate }) {
+      const lastMarkdownRef = useRef(initialMarkdown);
+      const editor = useCreateBlockNote();
+
+      // Load initial content once
+      useEffect(() => {
+        let active = true;
+        async function loadContent() {
+          if (initialMarkdown) {
+            try {
+              const blocks = await editor.tryParseMarkdownToBlocks(initialMarkdown);
+              if (active) {
+                editor.replaceBlocks(editor.document, blocks);
+              }
+            } catch (err) {
+              console.error("BlockNote failed to parse initial markdown:", err);
+            }
+          }
+        }
+        loadContent();
+        return () => {
+          active = false;
+        };
+      }, [editor]);
+
+      // Track updates
+      useEffect(() => {
+        const unsubscribe = editor.onChange(async () => {
+          try {
+            const markdown = await editor.blocksToMarkdownLossy(editor.document);
+            if (markdown !== lastMarkdownRef.current) {
+              lastMarkdownRef.current = markdown;
+              onUpdate(markdown);
+            }
+          } catch (err) {
+            console.error("BlockNote failed to convert blocks to markdown:", err);
+          }
+        });
+        return unsubscribe;
+      }, [editor, onUpdate]);
+
+      return React.createElement(BlockNoteView, {
+        editor: editor,
+        theme: 'dark'
+      });
+    }
+
+    window.initializeBlockNoteEditor = function(container, initialMarkdown, onUpdate) {
+      if (container.dataset.mounted) return;
+      container.dataset.mounted = 'true';
+
+      const root = createRoot(container);
+      root.render(React.createElement(BlockNoteWrapper, {
+        initialMarkdown: initialMarkdown,
+        onUpdate: onUpdate
+      }));
+    };
