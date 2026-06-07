@@ -643,6 +643,22 @@ export default {
     }
 
     // ------------------------------------------
+    // Admin Route: GET /admin/logout
+    // ------------------------------------------
+    if (path === '/admin/logout' && method === 'GET') {
+      const host = request.headers.get('host') || '';
+      const protocol = host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https';
+      const secureFlag = protocol === 'https' ? ' Secure;' : '';
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': `${protocol}://${host}/`,
+          'Set-Cookie': `pouta_admin_session=; Path=/; HttpOnly;${secureFlag} SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+        }
+      });
+    }
+
+    // ------------------------------------------
     // Admin Route: POST /admin/forms/:formId
     // ------------------------------------------
     const adminFormMatch = path.match(adminFormRegex);
@@ -742,24 +758,129 @@ export default {
     // Default Fallback
     return new Response(
       `<!DOCTYPE html>
-      <html>
+      <html lang="en">
       <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Pouta Forms</title>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-          .container { text-align: center; max-width: 600px; padding: 2rem; }
-          h1 { color: #38bdf8; font-size: 2.5rem; margin-bottom: 1rem; }
-          p { color: #94a3b8; font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem; }
-          .btn { background: #0284c7; color: white; padding: 0.8rem 1.6rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; transition: background 0.2s; }
-          .btn:hover { background: #0369a1; }
+          :root {
+            --bg-main: #0b0f19;
+            --accent-color: #F59E0B;
+            --accent-hover: #d97706;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+          }
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-image:
+              radial-gradient(circle at 15% 30%, rgba(245, 158, 11, 0.06) 0%, transparent 45%),
+              radial-gradient(circle at 85% 70%, rgba(239, 68, 68, 0.05) 0%, transparent 45%);
+          }
+          main {
+            text-align: center;
+            max-width: 480px;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+          }
+          .logo-mark {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 0.5rem;
+            opacity: 0.95;
+          }
+          h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.65;
+            max-width: 360px;
+          }
+          .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            color: #0b0f19;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 0.5rem;
+            transition: opacity 0.2s, transform 0.2s;
+            letter-spacing: 0.01em;
+          }
+          .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+          .divider {
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+            border-radius: 2px;
+            opacity: 0.5;
+            margin: 0.25rem auto;
+          }
         </style>
       </head>
       <body>
-        <div class="container">
+        <main>
+          <svg class="logo-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g stroke="#F59E0B" stroke-linecap="round">
+              <line x1="50" y1="8" x2="50" y2="19" stroke-width="5.5"/>
+              <line x1="50" y1="81" x2="50" y2="92" stroke-width="5.5"/>
+              <line x1="8" y1="50" x2="19" y2="50" stroke-width="5.5"/>
+              <line x1="81" y1="50" x2="92" y2="50" stroke-width="5.5"/>
+              <line x1="21.7" y1="21.7" x2="29.4" y2="29.4" stroke-width="5"/>
+              <line x1="70.6" y1="70.6" x2="78.3" y2="78.3" stroke-width="5"/>
+              <line x1="78.3" y1="21.7" x2="70.6" y2="29.4" stroke-width="5"/>
+              <line x1="29.4" y1="70.6" x2="21.7" y2="78.3" stroke-width="5"/>
+              <line x1="13.4" y1="35.7" x2="20.2" y2="39.6" stroke-width="4.5"/>
+              <line x1="79.8" y1="60.4" x2="86.6" y2="64.3" stroke-width="4.5"/>
+              <line x1="35.7" y1="13.4" x2="39.6" y2="20.2" stroke-width="4.5"/>
+              <line x1="60.4" y1="79.8" x2="64.3" y2="86.6" stroke-width="4.5"/>
+              <line x1="64.3" y1="13.4" x2="60.4" y2="20.2" stroke-width="4.5"/>
+              <line x1="39.6" y1="79.8" x2="35.7" y2="86.6" stroke-width="4.5"/>
+              <line x1="86.6" y1="35.7" x2="79.8" y2="39.6" stroke-width="4.5"/>
+              <line x1="20.2" y1="60.4" x2="13.4" y2="64.3" stroke-width="4.5"/>
+            </g>
+            <circle cx="50" cy="50" r="22" stroke="#F59E0B" stroke-width="3.5" fill="none"/>
+            <circle cx="50" cy="50" r="15" stroke="#F59E0B" stroke-width="2.5" fill="none"/>
+            <circle cx="50" cy="50" r="9" stroke="#F59E0B" stroke-width="2" fill="none"/>
+            <circle cx="50" cy="50" r="4" fill="#F59E0B"/>
+          </svg>
           <h1>Pouta Forms</h1>
-          <p>This edge worker powers high-performance dynamic forms. Admin access requires authorized Google Authentication.</p>
-          <a href="/admin/login" class="btn">Admin Console Login</a>
-        </div>
+          <div class="divider"></div>
+          <p>High-performance edge forms. Admin access requires authorized Google Authentication.</p>
+          <a href="/admin/login" class="btn" id="adminLoginBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Admin Console Login
+          </a>
+        </main>
       </body>
       </html>`,
       {
