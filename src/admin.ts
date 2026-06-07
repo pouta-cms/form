@@ -35,9 +35,9 @@ export const adminHtml = `
       --border-color: rgba(255, 255, 255, 0.08);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
-      --accent-grad: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      --accent-color: #6366f1;
-      --accent-hover: #4f46e5;
+      --accent-grad: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+      --accent-color: #F59E0B;
+      --accent-hover: #d97706;
       --danger-color: #ef4444;
       --success-color: #10b981;
       --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -111,15 +111,15 @@ export const adminHtml = `
     }
 
     .logo-icon {
-      width: 28px;
-      height: 28px;
-      background: var(--accent-grad);
+      width: 32px;
+      height: 32px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 0.9rem;
+      flex-shrink: 0;
     }
 
     .logo-text {
@@ -351,11 +351,10 @@ export const adminHtml = `
     }
 
     .welcome-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      background: var(--accent-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.5rem;
+      opacity: 0.9;
     }
 
     .welcome-title {
@@ -776,7 +775,32 @@ export const adminHtml = `
   <aside>
     <div class="sidebar-header">
       <div class="logo-container">
-        <div class="logo-icon">p</div>
+        <div class="logo-icon">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <g stroke="#F59E0B" stroke-linecap="round">
+              <line x1="50" y1="8" x2="50" y2="19" stroke-width="5.5"></line>
+              <line x1="50" y1="81" x2="50" y2="92" stroke-width="5.5"></line>
+              <line x1="8" y1="50" x2="19" y2="50" stroke-width="5.5"></line>
+              <line x1="81" y1="50" x2="92" y2="50" stroke-width="5.5"></line>
+              <line x1="21.7" y1="21.7" x2="29.4" y2="29.4" stroke-width="5"></line>
+              <line x1="70.6" y1="70.6" x2="78.3" y2="78.3" stroke-width="5"></line>
+              <line x1="78.3" y1="21.7" x2="70.6" y2="29.4" stroke-width="5"></line>
+              <line x1="29.4" y1="70.6" x2="21.7" y2="78.3" stroke-width="5"></line>
+              <line x1="13.4" y1="35.7" x2="20.2" y2="39.6" stroke-width="4.5"></line>
+              <line x1="79.8" y1="60.4" x2="86.6" y2="64.3" stroke-width="4.5"></line>
+              <line x1="35.7" y1="13.4" x2="39.6" y2="20.2" stroke-width="4.5"></line>
+              <line x1="60.4" y1="79.8" x2="64.3" y2="86.6" stroke-width="4.5"></line>
+              <line x1="64.3" y1="13.4" x2="60.4" y2="20.2" stroke-width="4.5"></line>
+              <line x1="39.6" y1="79.8" x2="35.7" y2="86.6" stroke-width="4.5"></line>
+              <line x1="86.6" y1="35.7" x2="79.8" y2="39.6" stroke-width="4.5"></line>
+              <line x1="20.2" y1="60.4" x2="13.4" y2="64.3" stroke-width="4.5"></line>
+            </g>
+            <circle cx="50" cy="50" r="22" stroke="#F59E0B" stroke-width="3.5" fill="none"></circle>
+            <circle cx="50" cy="50" r="15" stroke="#F59E0B" stroke-width="2.5" fill="none"></circle>
+            <circle cx="50" cy="50" r="9" stroke="#F59E0B" stroke-width="2" fill="none"></circle>
+            <circle cx="50" cy="50" r="4" fill="#F59E0B"></circle>
+          </svg>
+        </div>
         <div class="logo-text">Pouta Forms</div>
       </div>
     </div>
@@ -804,17 +828,17 @@ export const adminHtml = `
         <div class="form-subheading" style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; color: var(--text-secondary);">
           <span id="headerFormId">ID: test-form</span>
           <span style="color: var(--border-color)">|</span>
-          <a id="headerFormLink" href="#" target="_blank" style="color: #38bdf8; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 500; transition: color 0.2s;">
+          <a id="headerFormLink" href="#" target="_blank" style="color: #F59E0B; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 500; transition: color 0.2s;">
             <span>Open Form</span>
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
           <span style="color: var(--border-color)">|</span>
-          <button onclick="copyFormLink()" style="background: none; border: none; color: #38bdf8; cursor: pointer; font-size: 0.8rem; font-weight: 500; padding: 0; display: inline-flex; align-items: center; gap: 0.25rem; transition: color 0.2s;" title="Copy shareable link">
+          <button onclick="copyFormLink()" style="background: none; border: none; color: #F59E0B; cursor: pointer; font-size: 0.8rem; font-weight: 500; padding: 0; display: inline-flex; align-items: center; gap: 0.25rem; transition: color 0.2s;" title="Copy shareable link">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span id="copyLinkText">Copy Link</span>
           </button>
           <span style="color: var(--border-color)">|</span>
-          <button onclick="copyEditLink()" style="background: none; border: none; color: #a78bfa; cursor: pointer; font-size: 0.8rem; font-weight: 500; padding: 0; display: inline-flex; align-items: center; gap: 0.25rem; transition: color 0.2s;" title="Copy admin edit link">
+          <button onclick="copyEditLink()" style="background: none; border: none; color: #fbbf24; cursor: pointer; font-size: 0.8rem; font-weight: 500; padding: 0; display: inline-flex; align-items: center; gap: 0.25rem; transition: color 0.2s;" title="Copy admin edit link">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span id="copyEditLinkText">Copy Edit Link</span>
           </button>
@@ -898,7 +922,32 @@ export const adminHtml = `
 
   <!-- Empty state welcome screen -->
   <div class="welcome-container" id="emptyWorkspaceState" style="flex: 1;">
-    <div class="welcome-icon">⚡</div>
+    <div class="welcome-icon">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+        <g stroke="#F59E0B" stroke-linecap="round">
+          <line x1="50" y1="8" x2="50" y2="19" stroke-width="5.5"></line>
+          <line x1="50" y1="81" x2="50" y2="92" stroke-width="5.5"></line>
+          <line x1="8" y1="50" x2="19" y2="50" stroke-width="5.5"></line>
+          <line x1="81" y1="50" x2="92" y2="50" stroke-width="5.5"></line>
+          <line x1="21.7" y1="21.7" x2="29.4" y2="29.4" stroke-width="5"></line>
+          <line x1="70.6" y1="70.6" x2="78.3" y2="78.3" stroke-width="5"></line>
+          <line x1="78.3" y1="21.7" x2="70.6" y2="29.4" stroke-width="5"></line>
+          <line x1="29.4" y1="70.6" x2="21.7" y2="78.3" stroke-width="5"></line>
+          <line x1="13.4" y1="35.7" x2="20.2" y2="39.6" stroke-width="4.5"></line>
+          <line x1="79.8" y1="60.4" x2="86.6" y2="64.3" stroke-width="4.5"></line>
+          <line x1="35.7" y1="13.4" x2="39.6" y2="20.2" stroke-width="4.5"></line>
+          <line x1="60.4" y1="79.8" x2="64.3" y2="86.6" stroke-width="4.5"></line>
+          <line x1="64.3" y1="13.4" x2="60.4" y2="20.2" stroke-width="4.5"></line>
+          <line x1="39.6" y1="79.8" x2="35.7" y2="86.6" stroke-width="4.5"></line>
+          <line x1="86.6" y1="35.7" x2="79.8" y2="39.6" stroke-width="4.5"></line>
+          <line x1="20.2" y1="60.4" x2="13.4" y2="64.3" stroke-width="4.5"></line>
+        </g>
+        <circle cx="50" cy="50" r="22" stroke="#F59E0B" stroke-width="3.5" fill="none"></circle>
+        <circle cx="50" cy="50" r="15" stroke="#F59E0B" stroke-width="2.5" fill="none"></circle>
+        <circle cx="50" cy="50" r="9" stroke="#F59E0B" stroke-width="2" fill="none"></circle>
+        <circle cx="50" cy="50" r="4" fill="#F59E0B"></circle>
+      </svg>
+    </div>
     <h2 class="welcome-title">Pouta Forms Dashboard</h2>
     <p class="welcome-text">Select a form schema from the left sidebar to view details, configure page fields, edit logic jumps, or check submission logs. You can also create a new form configuration instantly.</p>
   </div>
@@ -1796,8 +1845,7 @@ export const adminHtml = `
 
     // Sign out
     function logout() {
-      document.cookie = 'pouta_admin_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      window.location.href = '/admin/login';
+      window.location.href = '/admin/logout';
     }
 
     function escapeHtml(str) {
