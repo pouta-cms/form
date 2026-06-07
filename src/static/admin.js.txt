@@ -79,25 +79,43 @@
       });
     }
 
+    function normalizeSchemaPages(pages) {
+      if (!Array.isArray(pages)) {
+        return [];
+      }
+      return pages.map((page, index) => {
+        if (typeof page !== 'object' || page === null) {
+          page = {};
+        }
+        return {
+          ...page,
+          id: page.id || `page-${index + 1}`,
+          title: page.title || `Page ${index + 1}`,
+          fields: Array.isArray(page.fields) ? page.fields : []
+        };
+      });
+    }
+
     async function selectForm(formId) {
       state.currentFormId = formId;
       renderFormsList();
 
       try {
         // Fetch Schema
-        const schemaRes = await fetch(`/forms/${formId}`);
+        const schemaRes = await fetch(`/forms/${encodeURIComponent(formId)}`);
         if (schemaRes.ok) {
           const schema = await schemaRes.json();
+          const normalizedPages = normalizeSchemaPages(schema.pages);
           state.schema = {
             ...schema,
             id: formId,
             title: schema.title || 'Untitled Form',
             turnstileEnabled: !!schema.turnstileEnabled,
-            pages: schema.pages || []
+            pages: normalizedPages
           };
           
           // Fetch Submissions
-          const subsRes = await fetch(`/admin/submissions/${formId}`);
+          const subsRes = await fetch(`/admin/submissions/${encodeURIComponent(formId)}`);
           if (subsRes.ok) {
             const subsData = await subsRes.json();
             state.submissions = subsData.submissions || [];
@@ -112,7 +130,7 @@
 
           document.getElementById('headerFormTitle').innerText = state.schema.title;
           document.getElementById('headerFormId').innerText = 'ID: ' + formId;
-          document.getElementById('headerFormLink').href = '/forms/' + formId;
+          document.getElementById('headerFormLink').href = '/forms/' + encodeURIComponent(formId);
           
           document.getElementById('metaTitle').value = state.schema.title;
           document.getElementById('metaLogoUrl').value = state.schema.logoUrl || '';
@@ -194,9 +212,9 @@
       renderJsonPreview();
     }
 
-    function copyFormLink() {
+     function copyFormLink() {
       if (!state.currentFormId) return;
-      const url = window.location.origin + '/forms/' + state.currentFormId;
+      const url = window.location.origin + '/forms/' + encodeURIComponent(state.currentFormId);
       navigator.clipboard.writeText(url).then(() => {
         const el = document.getElementById('copyLinkText');
         el.innerText = 'Copied!';
@@ -219,7 +237,7 @@
 
     function copyEditLink() {
       if (!state.currentFormId) return;
-      const url = window.location.origin + '/admin?form=' + state.currentFormId;
+      const url = window.location.origin + '/admin?form=' + encodeURIComponent(state.currentFormId);
       navigator.clipboard.writeText(url).then(() => {
         const el = document.getElementById('copyEditLinkText');
         el.innerText = 'Copied!';
@@ -774,13 +792,14 @@
           return;
         }
 
+        const normalizedPages = normalizeSchemaPages(parsed.pages);
         // Apply to state
         state.schema = {
           ...parsed,
           id: state.currentFormId, // Keep current form ID
           title: parsed.title || 'Untitled Form',
           turnstileEnabled: !!parsed.turnstileEnabled,
-          pages: parsed.pages || []
+          pages: normalizedPages
         };
 
         // Update UI inputs
@@ -880,7 +899,7 @@
       if (!state.currentFormId) return;
 
       try {
-        const res = await fetch(`/admin/forms/${state.currentFormId}`, {
+        const res = await fetch(`/admin/forms/${encodeURIComponent(state.currentFormId)}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -906,7 +925,7 @@
       if (!confirmed) return;
 
       try {
-        const res = await fetch(`/admin/forms/${state.currentFormId}`, {
+        const res = await fetch(`/admin/forms/${encodeURIComponent(state.currentFormId)}`, {
           method: 'DELETE'
         });
 
