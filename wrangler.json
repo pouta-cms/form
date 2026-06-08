@@ -17,7 +17,8 @@
   ],
   "analytics_engine_datasets": [
     {
-      "binding": "FORM_ANALYTICS"
+      "binding": "FORM_ANALYTICS",
+      "dataset": "pouta_form_analytics"
     }
   ]
 }

@@ -125,8 +125,24 @@ describe("Worker Router tests", () => {
       });
       const resHtml = await worker.fetch(reqHtml, mockEnv, mockCtx);
       expect(resHtml.status).toBe(200);
+      expect(resHtml.headers.get("Cache-Control")).toBe("no-cache, no-store, must-revalidate");
       expect(await resHtml.text()).toContain("<!DOCTYPE html>");
       expect(mockEnv.FORM_ANALYTICS.writeDataPoint).toHaveBeenCalled();
+    });
+
+    it("should NOT log telemetry when requested by an authenticated admin", async () => {
+      await env.FORM_SCHEMAS.put("test-form", JSON.stringify(mockSchema));
+      const token = await signJWT({ email: "admin@example.com", exp: Math.floor(Date.now() / 1000) + 120 }, mockEnv.JWT_SECRET);
+      const reqHtml = new Request("http://localhost/forms/test-form", {
+        headers: {
+          Accept: "text/html",
+          Cookie: `pouta_admin_session=${token}`
+        }
+      });
+      vi.clearAllMocks();
+      const resHtml = await worker.fetch(reqHtml, mockEnv, mockCtx);
+      expect(resHtml.status).toBe(200);
+      expect(mockEnv.FORM_ANALYTICS.writeDataPoint).not.toHaveBeenCalled();
     });
 
     it("should handle partial and completed submissions", async () => {

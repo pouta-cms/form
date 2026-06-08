@@ -78,7 +78,13 @@ To enable admin authentication, you must configure a Google OAuth 2.0 Client:
      npx wrangler secret put GOOGLE_CLIENT_ID
      npx wrangler secret put GOOGLE_CLIENT_SECRET
      npx wrangler secret put JWT_SECRET
+     # For live Analytics Engine statistics:
+     npx wrangler secret put CLOUDFLARE_ACCOUNT_ID
+     npx wrangler secret put CLOUDFLARE_API_TOKEN
      ```
+
+> [!NOTE]
+> To transition from mocked analytics to live analytics in the admin dashboard, you must define `CLOUDFLARE_ACCOUNT_ID` (your Cloudflare account identifier) and `CLOUDFLARE_API_TOKEN` (an API token with `Account Analytics: Read` permission) in your production secrets. Without these, the dashboard falls back to mocked view counts.
 
 ---
 
