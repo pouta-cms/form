@@ -369,13 +369,20 @@ export default {
         });
       }
 
-      // Log Viewed telemetry point (fire-and-forget, non-blocking)
-      logTelemetry(env, formId, 'viewed', 'anonymous', request);
+      // Log Viewed telemetry point (fire-and-forget, non-blocking) if not requested by an admin
+      const adminUser = await getAdminUser(request, env);
+      if (!adminUser) {
+        logTelemetry(env, formId, 'viewed', 'anonymous', request);
+      }
 
       if (wantsHtml) {
         const lang = detectLanguage(request);
         return new Response(renderPlayerHtml(schema, formId, false, env.TURNSTILE_PUBLIC_KEY, lang), {
-          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+          headers: {
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            ...corsHeaders
+          }
         });
       }
 
@@ -474,9 +481,12 @@ export default {
              updated_at = excluded.updated_at`
         ).bind(id, formId, status, answersStr, now).run();
 
-        // If it did not exist before and this is a partial save, log 'started' event to telemetry
+        // If it did not exist before and this is a partial save, log 'started' event to telemetry if not requested by an admin
         if (!existing && status === 'partial') {
-          logTelemetry(env, formId, 'started', id, request);
+          const adminUser = await getAdminUser(request, env);
+          if (!adminUser) {
+            logTelemetry(env, formId, 'started', id, request);
+          }
         }
 
         return new Response(JSON.stringify({ success: true }), {
@@ -808,7 +818,7 @@ export default {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'text/plain'
               },
               body: sqlQuery
             });
