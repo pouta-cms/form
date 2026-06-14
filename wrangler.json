@@ -1,5 +1,5 @@
 {
-  "name": "pouta-forms",
+  "name": "form",
   "main": "src/index.ts",
   "compatibility_date": "2024-05-24",
   "kv_namespaces": [
