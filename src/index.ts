@@ -811,7 +811,7 @@ export default {
         if (env.CLOUDFLARE_ACCOUNT_ID && env.CLOUDFLARE_API_TOKEN) {
           try {
             const cleanFormId = formId.replace(/'/g, "''");
-            const sqlQuery = `SELECT count() AS views FROM FORM_ANALYTICS WHERE index1 = '${cleanFormId}' AND blob1 = 'viewed' FORMAT JSON`;
+            const sqlQuery = `SELECT count() AS views FROM pouta_form_analytics WHERE index1 = '${cleanFormId}' AND blob1 = 'viewed' FORMAT JSON`;
             const url = `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/analytics_engine/sql`;
             
             const res = await fetch(url, {
